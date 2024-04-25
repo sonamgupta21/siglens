@@ -34,8 +34,13 @@ function addQueryElement() {
     </div>`);
     
     } else {
+        // Get the last query name
+        var lastQueryName = $('#metrics-queries').find('.metrics-query:last .query-name').text();
+        // Determine the next query name based on the last query name
+        var nextQueryName = String.fromCharCode(lastQueryName.charCodeAt(0) + 1);
+        
         queryElement = $('#metrics-queries').find('.metrics-query').last().clone();
-        queryElement.find('.query-name').text(String.fromCharCode(97 + queryIndex));
+        queryElement.find('.query-name').text(nextQueryName);
     }
     
     $('#metrics-queries').append(queryElement);
