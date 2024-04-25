@@ -6,10 +6,26 @@ $(document).ready(function() {
 });
 
 $('#add-query').on('click', addQueryElement);
-$('#add-formula').on('click', function() {
-    console.log(queries);
-});
+$('#add-formula').on('click', addFormulaElement);
+// $('#run').on('click', function() {
+//     console.log(queries);
+// });
+function addFormulaElement(){
+    let formulaElement = $(`
+    <div class="metrics-query">
+        <input class="formula" placeholder="Formula, eg. 2*a">
+        <div>
+            <div class="remove-query">X</div>
+        </div>
+    </div>`);
 
+    $('#metrics-formula').append(formulaElement);
+
+    // Add click event handler for the remove button
+    formulaElement.find('.remove-query').on('click', function() {
+        formulaElement.remove();
+    });
+}
 function addQueryElement() {
     // Clone the first query element if it exists, otherwise create a new one
     var queryElement;
@@ -29,6 +45,14 @@ function addQueryElement() {
             </div>
         </div>
         <div>
+            <div class="alias-box">
+                <div class="as-btn">as...</div>
+                <div class="alias-filling-box" style="display: none;">
+                    <div>as</div>
+                    <input type="text" placeholder="alias">
+                    <div> X </div>
+                </div>
+            </div>
             <div class="remove-query">X</div>
         </div>
     </div>`);
@@ -47,9 +71,11 @@ function addQueryElement() {
 
     // Show or hide the close icon based on the number of queries
     updateCloseIconVisibility();
-    console.log(queries[String.fromCharCode(97 + queryIndex - 1)]);
     // Initialize autocomplete with the details of the previous query if it exists
     initializeAutocomplete(queryElement, queryIndex > 0 ? queries[String.fromCharCode(97 + queryIndex - 1)] : undefined);
+
+    // Add visualization container for the query
+    addVisualizationContainer(String.fromCharCode(97 + queryIndex));
 
     queryIndex++;
 
@@ -61,6 +87,21 @@ function addQueryElement() {
 
         // Show or hide the close icon based on the number of queries
         updateCloseIconVisibility();
+
+        // Remove corresponding visualization container
+        removeVisualizationContainer(queryName);
+    });
+
+    // Add click event handler for the alias button
+    queryElement.find('.as-btn').on('click', function() {
+        $(this).hide(); // Hide the "as..." button
+        $(this).siblings('.alias-filling-box').show(); // Show the alias filling box
+    });
+
+    // Add click event handler for the alias close button
+    queryElement.find('.alias-filling-box div').last().on('click', function() {
+        $(this).parent().hide(); // Hide the alias filling box
+        $(this).parent().siblings('.as-btn').show(); // Show the "as..." button
     });
 }
 
@@ -270,4 +311,27 @@ function initializeAutocomplete(queryElement, previousQuery = {}) {
 function updateCloseIconVisibility() {
     var numQueries = $('#metrics-queries').children('.metrics-query').length;
     $('.remove-query').toggle(numQueries > 1);
+}
+
+function addVisualizationContainer(queryName) {
+    console.log(queryName);
+    // Create a new visualization container with a unique identifier
+    var visualizationContainer = $('<div class="metrics-graph" data-query="' + queryName + '"></div>');
+    $('#metrics-graphs').append(visualizationContainer);
+    updateGraphWidth()
+}
+
+function removeVisualizationContainer(queryName) {
+    // Remove the visualization container corresponding to the given queryName
+    $('#metrics-graphs').find('.metrics-graph[data-query="' + queryName + '"]').remove();
+    updateGraphWidth()
+}
+
+function updateGraphWidth() {
+    var numQueries = $('#metrics-queries').children('.metrics-query').length;
+    if (numQueries === 1) {
+        $('.metrics-graph').addClass('full-width');
+    } else {
+        $('.metrics-graph').removeClass('full-width');
+    }
 }

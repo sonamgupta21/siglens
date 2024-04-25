@@ -5338,6 +5338,7 @@ input:checked + .slider:before {
 .metrics-query input{
     color: var(--text-color) !important;
     outline: none;
+    border-radius: 0;
 }
 
 .metrics-query .formula{
@@ -5347,6 +5348,7 @@ input:checked + .slider:before {
 .metrics-query input:focus{
     background: var(--ui-widget-bg-color);
     outline: none;
+    border-radius: 0px;
 }
 
 .metrics-query div{
@@ -5407,12 +5409,10 @@ input:checked + .slider:before {
 .metrics-query .metrics{
     min-width: 230px;
     width: auto !important;
-    border-radius: 0px;
 }
 .metrics-query .agg-function{
     width: 78px !important;
     padding: 12px;
-    border-radius: 0px;
 }
 
 .metrics-query .remove-query{
@@ -5446,4 +5446,35 @@ input:checked + .slider:before {
 #visualization-options div{
     margin-right: 70px;
     font-size: 12px;
+}
+.alias-box{
+    margin-right: 10px;
+}
+.alias-box .as-btn{
+    height: 32px;
+    width: 38px;
+    display: flex;
+    justify-content: center;
+    border-radius: 5px;
+}
+.alias-box .as-btn:hover{
+    background-color: var(--purple-2);
+    color: var(--white);
+    cursor: pointer;
+}
+
+.alias-filling-box div{
+    border: 1px solid var(--border-btn-color);
+    height: 32px;
+    width: 46px;
+    display: flex;
+    justify-content: center;
+}
+.alias-filling-box div:first-child{
+    border-radius: 5px 0 0 5px;
+    cursor: default;
+}
+.alias-filling-box div:last-child{
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
 }
