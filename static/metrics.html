@@ -143,16 +143,44 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                     </div>
                 </div>
-            </div>
-            <div id="metrics-explorer">
-               <div id="metrics-queries"></div>
-                <div class="mt-4">
-                    <button id="add-query" class="btn">Add Query</button>
-                    <button id="add-formula" class="btn">Add Formula</button>
+                <div id="metrics-explorer">
+                   <div id="metrics-queries"></div>
+                   <div id="metrics-formula"></div>
+                    <div class="mt-3 d-flex ">
+                        <button id="add-query" class="btn">Add Query</button>
+                        <button id="add-formula" class="btn">Add Formula</button>
+                        <!-- <button id="run" class="btn">Run</button> -->
+                    </div>
                 </div>
-            </div>
-            <div id="metrics-graphs">
-
+                <hr>
+                <div id="visualization-options" class="d-flex">
+                    <div>
+                        Display : Line
+                    </div>
+                    <div>
+                        Color : Classic
+                    </div>
+                    <div>
+                        Style : Solid
+                    </div>
+                    <div>
+                        Stroke : Line
+                    </div>
+                </div>
+                <hr>
+                <div class="mt-3">
+                    <div class="graph-view-container btn">
+                        <label class="switch">
+                            <input type="checkbox" id="toggle-switch" checked>
+                            <span class="slider round"></span>
+                        </label>
+                        <label class="label">One graph per query</label>
+                    </div>
+                </div>
+                <hr>
+                <div id="metrics-graphs" class="metrics-graph-container mt-3">
+    
+                </div>
             </div>
             <!-- <div id="metrics-display-toggle-container">
                 <button class="btn metrics-graph-btn active">Graph</button>
@@ -201,3 +229,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </body>
 
 </html>
+<div class="query-box">
+    <div class="query-name">${String.fromCharCode(97 + queryIndex)}</div>
+    <input type="text" class="metrics" placeholder="Select a metric">
+    <div>from</div>
+    <div class="tag-container">
+        <input type="text" class="everywhere" placeholder="(everywhere)">
+    </div>
+    <input class="agg-function" value="avg by">
+    <div class="value-container">
+        <input class="everything" placeholder="(everything)">
+    </div>
+</div>
+<div>
+    <div class="alias-box">
+        <div class="as-btn">as...</div>
+        <div class="alias-filling-box">
+            <div>as</div>
+            <input type="text" placeholder="alias">
+            <div> X </div>
+        </div>
+    </div>
+    <div class="remove-query">X</div>
+</div>
