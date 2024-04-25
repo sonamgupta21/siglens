@@ -1755,7 +1755,7 @@ div.dts div.dataTables_scrollBody table {
     overflow-x: hidden;
 }
 
-#sq-search-container ,#db-search-container, #metrics-container{
+#sq-search-container ,#db-search-container{
     display: grid;
     grid-template-columns: 2fr auto auto;
     column-gap: 15px;
@@ -5242,4 +5242,108 @@ input.form-control {
     left: -36px;
     background-color: var(--bg-color);
     padding: 8px;
+}
+
+/* Metrics Explorer */
+#metrics-container{
+    margin: 20px 20px 0 20px;
+}
+#metrics-explorer{padding: 0px 20px;}
+
+.metrics-query{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.query-box{
+    flex-wrap: wrap;
+}
+
+.metrics-query input{
+    color: var(--text-color) !important;
+    outline: none;
+}
+
+.metrics-query input:focus{
+    background: var(--ui-widget-bg-color);
+    outline: none;
+}
+
+.metrics-query div{
+    display: flex;
+    align-items: center;
+}
+.metrics-query .query-box div{
+    border: 1px solid var(--border-btn-color);
+    border-right: none;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    padding: 0px 12px;
+}
+
+.metrics-query .value-container{
+    border-right: 1px solid var(--border-btn-color) !important;
+    border-radius: 0 5px 5px 0;
+}
+
+.metrics-query div .tag, .metrics-query div .value{
+    border: 1px solid var(--border-switch);
+    padding: 1px 7px;
+    border-radius: 5px;
+    background-color: var(--filter-color);
+    color: var(--text-color);
+    padding: 0px 7px;
+    margin-right: 5px;
+    white-space: nowrap;
+}
+
+.tag-container,.value-container {
+    display: inline-block;
+    border: 1px solid var(--border-btn-color);
+}
+
+.everywhere,
+.everything {
+    height: 28px;
+    border: none;
+    border-radius: 0px;
+    flex-grow: 1; 
+    padding: 0 !important;
+}
+
+.ui-helper-hidden-accessible {
+    display: none !important;
+}
+
+.metrics-query .query-name{
+    padding: 12px;
+    border-radius: 5px 0 0 5px;
+    background-color: var(--purple-2);
+    color: var(--white);
+    border: none !important;
+}
+
+.metrics-query .metrics{
+    min-width: 230px;
+    width: auto !important;
+    border-radius: 0px;
+}
+.metrics-query .agg-function{
+    width: 78px !important;
+    padding: 12px;
+    border-radius: 0px;
+}
+
+.metrics-query .remove-query{
+    cursor: pointer;
+    border: 1px solid var(--border-btn-color);
+    border-radius: 5px;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

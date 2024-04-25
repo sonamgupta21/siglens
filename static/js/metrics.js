@@ -556,6 +556,6 @@ function displayTable(res) {
     });
 }
 
-window.addEventListener('resize', function () {
-    lineChart.resize();
-});
+// window.addEventListener('resize', function () {
+//     lineChart.resize();
+// });
