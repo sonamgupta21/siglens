@@ -155,16 +155,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <hr>
                 <div id="visualization-options" class="d-flex">
                     <div>
-                        Display : Line
+                      Display : <input id="display-input" type="text" value="Line chart">
                     </div>
                     <div>
-                        Color : Classic
+                      Color : <input id="color-input" type="text" value="Classic">
                     </div>
-                    <div>
-                        Style : Solid
+                    <div id="line-style-div">
+                      Style : <input id="line-style-input" type="text" value="Solid">
                     </div>
-                    <div>
-                        Stroke : Line
+                    <div id="stroke-div">
+                      Stroke : <input id="stroke-input" type="text" value="Line">
                     </div>
                 </div>
                 <hr>
@@ -181,6 +181,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <div id="metrics-graphs" class="metrics-graph-container mt-3">
     
                 </div>
+                <div id="merged-graph-container" style="display: none;"></div>
             </div>
             <!-- <div id="metrics-display-toggle-container">
                 <button class="btn metrics-graph-btn active">Graph</button>
@@ -221,7 +222,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <script src="./js/date-picker.js?cb=1_1_10"></script>
     <script src="./js/lib/chart.umd.min.js"></script>
     <script src="./js/search.js?cb=1_1_10"></script>
-    <script src="./js/metrics.js?cb=1_1_10"></script>
+    <!-- <script src="./js/metrics.js?cb=1_1_10"></script> -->
     <script src="./js/metrics-explorer.js"></script>
 
     {{ .RunCheck2 | safeHTML }}
@@ -229,26 +230,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </body>
 
 </html>
-<div class="query-box">
-    <div class="query-name">${String.fromCharCode(97 + queryIndex)}</div>
-    <input type="text" class="metrics" placeholder="Select a metric">
-    <div>from</div>
-    <div class="tag-container">
-        <input type="text" class="everywhere" placeholder="(everywhere)">
-    </div>
-    <input class="agg-function" value="avg by">
-    <div class="value-container">
-        <input class="everything" placeholder="(everything)">
-    </div>
-</div>
-<div>
-    <div class="alias-box">
-        <div class="as-btn">as...</div>
-        <div class="alias-filling-box">
-            <div>as</div>
-            <input type="text" placeholder="alias">
-            <div> X </div>
-        </div>
-    </div>
-    <div class="remove-query">X</div>
-</div>

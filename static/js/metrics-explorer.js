@@ -6,7 +6,22 @@ $(document).ready(function() {
 });
 
 $('#add-query').on('click', addQueryElement);
+
 $('#add-formula').on('click', addFormulaElement);
+
+$('#toggle-switch').on('change', function() {
+    if ($(this).is(':checked')) {
+        // If the toggle switch is checked, display individual graph containers
+        $('#metrics-graphs').show();
+        $('#merged-graph-container').hide();
+    } else {
+        // If the toggle switch is unchecked, hide individual graph containers and display merged graph container
+        $('#metrics-graphs').hide();
+        $('#merged-graph-container').show();
+        mergeGraphs();
+    }
+});
+
 // $('#run').on('click', function() {
 //     console.log(queries);
 // });
@@ -56,7 +71,9 @@ function addQueryElement() {
             <div class="remove-query">X</div>
         </div>
     </div>`);
-    
+    $('#metrics-queries').append(queryElement);
+        // Add visualization container for the query
+        addVisualizationContainer(String.fromCharCode(97 + queryIndex), convertDataForChart(rawData1));
     } else {
         // Get the last query name
         var lastQueryName = $('#metrics-queries').find('.metrics-query:last .query-name').text();
@@ -65,17 +82,17 @@ function addQueryElement() {
         
         queryElement = $('#metrics-queries').find('.metrics-query').last().clone();
         queryElement.find('.query-name').text(nextQueryName);
+        // Add visualization container for the query
+        $('#metrics-queries').append(queryElement);
+
+        addVisualizationContainer(nextQueryName,convertDataForChart(rawData3));
     }
     
-    $('#metrics-queries').append(queryElement);
 
     // Show or hide the close icon based on the number of queries
     updateCloseIconVisibility();
     // Initialize autocomplete with the details of the previous query if it exists
     initializeAutocomplete(queryElement, queryIndex > 0 ? queries[String.fromCharCode(97 + queryIndex - 1)] : undefined);
-
-    // Add visualization container for the query
-    addVisualizationContainer(String.fromCharCode(97 + queryIndex));
 
     queryIndex++;
 
@@ -152,6 +169,7 @@ function initializeAutocomplete(queryElement, previousQuery = {}) {
         select: function(event, ui) {
             console.log('Selected:', ui.item.value);
             queryDetails.metrics = ui.item.value;
+            $(this).blur(); 
         }
     }).on('click', function() {
         if ($(this).autocomplete('widget').is(':visible')) {
@@ -161,7 +179,35 @@ function initializeAutocomplete(queryElement, previousQuery = {}) {
         }
     }).on('click', function() {
         $(this).select();
+    }).on('close', function(event) {
+        var selectedValue = $(this).val();
+        if (selectedValue === '') {
+            $(this).val(queryDetails.metrics);
+        }
+    }).on('keydown', function(event) {
+        if (event.keyCode === 27) { // For the Escape key
+            var selectedValue = $(this).val();
+            if (selectedValue === '') {
+                $(this).val(queryDetails.metrics);
+            }else if (!availableMetrics.includes(selectedValue)) {
+                $(this).val(queryDetails.metrics);
+            } else {
+                queryDetails.metrics = selectedValue;
+            }
+            $(this).blur(); 
+        }
+    }).on('change', function() {
+        var selectedValue = $(this).val();
+        if (!availableMetrics.includes(selectedValue)) {
+            console.log(selectedValue);
+            $(this).val(queryDetails.metrics);
+        } else {
+            queryDetails.metrics = selectedValue;
+        }
+        $(this).blur(); 
     });
+    
+    
 
     queryElement.find('.everywhere').autocomplete({
         source: function(request, response) {
@@ -313,19 +359,89 @@ function updateCloseIconVisibility() {
     $('.remove-query').toggle(numQueries > 1);
 }
 
-function addVisualizationContainer(queryName) {
+// Define a global variable to store chart data
+var chartDataCollection = {};
+
+function addVisualizationContainer(queryName, seriesData) {
     console.log(queryName);
     // Create a new visualization container with a unique identifier
-    var visualizationContainer = $('<div class="metrics-graph" data-query="' + queryName + '"></div>');
+    var visualizationContainer = $(`
+    <div class="metrics-graph" data-query="${queryName}">
+        <div>Metrics query - ${queryName}</div>
+    </div>`);
+
     $('#metrics-graphs').append(visualizationContainer);
-    updateGraphWidth()
+    
+    // Create a canvas element for the line chart
+    var canvas = $('<canvas></canvas>');
+    visualizationContainer.append(canvas);
+    
+    // Get the context of the canvas element
+    var ctx = canvas[0].getContext('2d');
+    
+    // Extract labels and datasets from seriesData
+    var labels = Object.keys(seriesData[0].values);
+    var datasets = seriesData.map(function(series, index) {
+        return {
+            label: series.seriesName,
+            data: Object.values(series.values),
+            borderColor: getRandomColor(), // Choose a different color for each dataset
+            borderWidth: 1,
+            fill: false
+        };
+    });
+    
+    // Define chart data using extracted labels and datasets
+    var chartData = {
+        labels: labels,
+        datasets: datasets
+    };
+
+    // Save chart data to the global variable
+    chartDataCollection[queryName] = chartData;
+
+    // Define chart options
+    var chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                align: 'start' // Align legend to the start (left)
+            }
+        },
+        scales: {
+            y: {
+                grid: {
+                    display: false // Hide vertical grid lines
+                }
+            }
+        }
+    };
+
+    // Create the line chart using Chart.js
+    var lineChart = new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: chartOptions
+    });
+    
+    updateGraphWidth();
 }
 
+
+
+
 function removeVisualizationContainer(queryName) {
+    console.log("removing visualization container", queryName);
     // Remove the visualization container corresponding to the given queryName
-    $('#metrics-graphs').find('.metrics-graph[data-query="' + queryName + '"]').remove();
-    updateGraphWidth()
+    var containerToRemove = $('#metrics-graphs').find('.metrics-graph[data-query="' + queryName + '"]');
+    console.log(containerToRemove);
+    containerToRemove.remove();
+    delete chartDataCollection[queryName];
+    updateGraphWidth();
 }
+
 
 function updateGraphWidth() {
     var numQueries = $('#metrics-queries').children('.metrics-query').length;
@@ -333,5 +449,255 @@ function updateGraphWidth() {
         $('.metrics-graph').addClass('full-width');
     } else {
         $('.metrics-graph').removeClass('full-width');
+    }
+}
+
+ // Options for Display and Color
+ var displayOptions = ["Line chart", "Bar chart", "Area chart", "Data table"];
+ var colorOptions = ["Classic", "Cool", "Warm"];
+
+ // Autocomplete for Display input
+ $("#display-input").autocomplete({
+   source: displayOptions,
+   minLength: 0,
+   select: function(event, ui) {
+    console.log('Selected:', ui.item.value);
+    toggleLineOptions(ui.item.value);
+}
+ }).on('click', function() {
+    if ($(this).autocomplete('widget').is(':visible')) {
+        $(this).autocomplete('close');
+    } else {
+        $(this).autocomplete('search', '');
+    }
+}).on('click', function() {
+    $(this).select();
+});
+
+ // Autocomplete for Color input
+ $("#color-input").autocomplete({
+   source: colorOptions,
+   minLength: 0
+ }).on('click', function() {
+    if ($(this).autocomplete('widget').is(':visible')) {
+        $(this).autocomplete('close');
+    } else {
+        $(this).autocomplete('search', '');
+    }
+}).on('click', function() {
+    $(this).select();
+});
+
+ // Function to show/hide Line Style and Stroke based on Display input
+ function toggleLineOptions(displayValue) {
+   if (displayValue === "Line chart") {
+     $("#line-style-div").show();
+     $("#stroke-div").show();
+   } else {
+     $("#line-style-div").hide();
+     $("#stroke-div").hide();
+   }
+ }
+
+ // Options for Line Style and Stroke
+ var lineStyleOptions = ["Solid", "Dash", "Dotted"];
+ var strokeOptions = ["Normal", "Thin", "Thick"];
+
+ // Autocomplete for Line Style input
+ $("#line-style-input").autocomplete({
+   source: lineStyleOptions,
+   minLength: 0
+ }).focus(function() {
+   $(this).autocomplete("search", "");
+ });
+
+ // Autocomplete for Stroke input
+ $("#stroke-input").autocomplete({
+   source: strokeOptions,
+   minLength: 0
+ }).focus(function() {
+   $(this).autocomplete("search", "");
+ });
+
+// Function to merge graphs
+function mergeGraphs() {
+    // Create a canvas element for the merged graph
+    var mergedCanvas = $('<canvas></canvas>');
+    $('#merged-graph-container').empty().append(mergedCanvas);
+
+    // Get the context of the canvas element
+    var mergedCtx = mergedCanvas[0].getContext('2d');
+
+    // Merge chart data into a single dataset
+    var mergedData = {
+        labels: [], // Combine labels from all datasets
+        datasets: []
+    };
+
+    // Loop through chartDataCollection to merge datasets
+    for (var queryName in chartDataCollection) {
+        if (chartDataCollection.hasOwnProperty(queryName)) {
+            // Merge datasets for the current query
+            var datasets = chartDataCollection[queryName].datasets;
+            datasets.forEach(function(dataset) {
+                mergedData.datasets.push({
+                    label: dataset.label, // Use dataset label
+                    data: dataset.data,
+                    borderColor: dataset.borderColor, // Use dataset border color
+                    borderWidth: dataset.borderWidth,
+                    fill: dataset.fill
+                });
+            });
+
+            // Update labels
+            mergedData.labels = chartDataCollection[queryName].labels;
+        }
+    }
+
+    // Create the merged line chart using Chart.js
+    var mergedLineChart = new Chart(mergedCtx, {
+        type: 'line',
+        data: mergedData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    align: 'start' // Align legend to the start (left)
+                }
+            },
+            scales: {
+                x: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'X-Axis Label'
+                    }
+                },
+                y: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Y-Axis Label'
+                    },
+                    grid: {
+                        display: false // Hide vertical grid lines
+                    }
+                }
+            }
+        }
+    });
+}
+
+
+
+// Helper function to generate random color
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+function convertDataForChart(data) {
+    let seriesArray = [];
+
+    // Iterate over each metric in the data
+    for (let metric in data.aggStats) {
+        if (data.aggStats.hasOwnProperty(metric)) {
+            let series = {
+                seriesName: metric,
+                values: {}
+            };
+
+            // Extract timestamp-value pairs for the metric
+            for (let timestamp in data.aggStats[metric]) {
+                if (data.aggStats[metric].hasOwnProperty(timestamp)) {
+                    series.values[timestamp] = data.aggStats[metric][timestamp];
+                }
+            }
+
+            seriesArray.push(series);
+        }
+    }
+
+    return seriesArray;
+}
+
+// Example usage:
+let rawData1 = {
+    "aggStats": {
+        "metric1-1": {
+            "2024-04-26T07:06": 10,
+            "2024-04-26T07:07": 20,
+            "2024-04-26T07:08": 30,
+            "2024-04-26T07:09": 10,
+            "2024-04-26T07:10": 40,
+            "2024-04-26T07:11": 20,
+            "2024-04-26T07:12": 30,
+            "2024-04-26T07:13": 28,
+            "2024-04-26T07:14": 18,
+            "2024-04-26T07:15": 38
+        },
+        "metric1-2": {
+            "2024-04-26T07:06": 29,
+            "2024-04-26T07:07": 39,
+            "2024-04-26T07:08": 19,
+            "2024-04-26T07:09": 49,
+            "2024-04-26T07:10": 29,
+            "2024-04-26T07:11": 19,
+            "2024-04-26T07:12": 39,
+            "2024-04-26T07:13": 29,
+            "2024-04-26T07:14": 49,
+            "2024-04-26T07:15": 19
+        }
+    }
+}
+
+let rawData2 = {
+    "aggStats": {
+        "metric2-1": {
+            "2024-04-26T07:06": 11,
+            "2024-04-26T07:07": 12,
+            "2024-04-26T07:08": 13,
+            "2024-04-26T07:09": 10,
+            "2024-04-26T07:10": 4,
+            "2024-04-26T07:11": 21,
+            "2024-04-26T07:12": 32,
+            "2024-04-26T07:13": 2,
+            "2024-04-26T07:14": 10,
+            "2024-04-26T07:15": 3
+        },
+        "metric2-2": {
+            "2024-04-26T07:06": 21,
+            "2024-04-26T07:07": 3,
+            "2024-04-26T07:08": 7,
+            "2024-04-26T07:09": 8,
+            "2024-04-26T07:10": 12,
+            "2024-04-26T07:11": 1,
+            "2024-04-26T07:12": 32,
+            "2024-04-26T07:13": 20,
+            "2024-04-26T07:14": 4,
+            "2024-04-26T07:15": 19
+        }
+    }
+}
+
+let rawData3= {
+    "aggStats": {
+        "metric3-1": {
+            "2024-04-26T07:06": 110,
+            "2024-04-26T07:07": 120,
+            "2024-04-26T07:08": 130,
+            "2024-04-26T07:09": 100,
+            "2024-04-26T07:10": 40,
+            "2024-04-26T07:11": 210,
+            "2024-04-26T07:12": 320,
+            "2024-04-26T07:13": 20,
+            "2024-04-26T07:14": 100,
+            "2024-04-26T07:15": 30
+        }
     }
 }

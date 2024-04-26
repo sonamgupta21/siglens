@@ -5404,15 +5404,24 @@ input:checked + .slider:before {
     background-color: var(--purple-2);
     color: var(--white);
     border: none !important;
+    font-weight: bold;
 }
 
 .metrics-query .metrics{
     min-width: 230px;
     width: auto !important;
+    background-color: #FFFFCC;
+}
+.metrics-query .metrics:focus{
+    background-color: #FFFFCC;
 }
 .metrics-query .agg-function{
     width: 78px !important;
     padding: 12px;
+    background-color: var(--drop-down-btn-bg-regular);
+}
+.metrics-query .agg-function:focus{
+    background-color: var(--drop-down-btn-bg-regular);
 }
 
 .metrics-query .remove-query{
@@ -5432,11 +5441,13 @@ input:checked + .slider:before {
     grid-gap: 20px; 
 }
 
-.metrics-graph {
+.metrics-graph, #merged-graph-container {
     height: 440px;
     border: 1px solid var(--border-btn-color);
     box-sizing: border-box; 
     border-radius: 5px;
+    box-shadow: var(--box-shadow);
+    padding: 10px 10px 10px 20px;
 }
 
 .metrics-graph.full-width {
@@ -5444,8 +5455,15 @@ input:checked + .slider:before {
 }
 
 #visualization-options div{
-    margin-right: 70px;
+    margin-right: 24px;
     font-size: 12px;
+    white-space: nowrap;
+}
+#visualization-options input{
+    height: 24px !important;
+    color: var(--text-color);
+    width: 84px;
+    padding: 7px;
 }
 .alias-box{
     margin-right: 10px;
@@ -5478,3 +5496,9 @@ input:checked + .slider:before {
     border-radius: 0 5px 5px 0;
     cursor: pointer;
 }
+
+#metrics-explorer .ui-widget.ui-widget-content{
+    list-style-type: none;
+    padding: 10px;
+}
+
