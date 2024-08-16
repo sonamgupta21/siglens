@@ -1088,11 +1088,14 @@ function getMetricsQData() {
                     qlType: 'promql',
                 };
             });
-            let functionsArray = formulaDetailsMap[key].functions || [];
-            // Update the formula by wrapping it with each function in the functionsArray
+
             let formula = formulas[key].formula;
-            for (let func of functionsArray) {
-                formula = `${func}(${formula})`;
+            if(!formulaDetails.isNumeric){
+                let functionsArray = formulaDetailsMap[key].functions || [];
+                // Update the formula by wrapping it with each function in the functionsArray
+                for (let func of functionsArray) {
+                    formula = `${func}(${formula})`;
+                }
             }
             formulasData.push({
                 end: endDate,

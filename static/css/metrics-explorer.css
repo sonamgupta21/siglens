@@ -289,6 +289,11 @@ input:checked + .slider:before {
     border-radius: 18px;
 }
 
+.show-functions-formula.disabled,
+.show-functions-formula.disabled:hover{
+    cursor: not-allowed;
+}
+
 .metrics-query .remove-query:hover,
 .formula-box .remove-query:hover{
     background: #EB364B;
