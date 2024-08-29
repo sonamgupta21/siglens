@@ -30,11 +30,14 @@ test.describe('Logs Page Tests', () => {
   });
 
   test('should open and close settings', async ({ page }) => {
-    await expect(page.locator('#setting-container')).not.toBeVisible();
-    await page.click('#logs-settings');
-    await expect(page.locator('#setting-container')).toBeVisible();
-    await page.click('#logs-settings');
-    await expect(page.locator('#setting-container')).not.toBeVisible();
+    const settingsContainer = page.locator('#setting-container');
+    const settingsButton = page.locator('#logs-settings');
+  
+    await expect(settingsContainer).not.toBeVisible();
+    await settingsButton.click();
+    await expect(settingsContainer).toBeVisible();
+    await settingsButton.click();
+    await expect(settingsContainer).not.toBeVisible();
   });
 
   test('should change query language', async ({ page }) => {
