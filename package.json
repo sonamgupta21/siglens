@@ -21,5 +21,14 @@
     "test": "mocha ui-test/specs/common.js --recursive ui-test/specs",
     "prettier:format": "prettier static/js/*.js --write ",
     "lint:js": "eslint static/js/*.js --fix"
-  }
+  },
+  "description": "<p align=\"center\"> <img src=\"https://github.com/siglens/siglens/assets/604069/7dab105b-2102-4a32-85c7-02fbb4604217\" width=\"300\"> </p>",
+  "main": "index.js",
+  "devDependencies": {
+    "@playwright/test": "^1.46.1",
+    "@types/node": "^22.5.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
