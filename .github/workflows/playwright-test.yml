@@ -1,0 +1,49 @@
+name: siglens-playwright-tests
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  playwright-tests:
+    if: '! github.event.pull_request.draft'
+    name: Playwright E2E Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+
+      - name: Build SigLens
+        run: make build
+
+      - name: Start SigLens
+        run: |
+          ./siglens --config server.yaml &
+          sleep 10  # Wait for SigLens to start up
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.18.0'
+
+      - name: Install dependencies
+        run: |
+          cd playwright-test
+          npm ci
+
+      - name: Install Playwright Browsers
+        run: |
+          cd playwright-test
+          npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        run: |
+          cd playwright-test
+          npx playwright test tests
