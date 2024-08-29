@@ -1,41 +1,43 @@
-name: Playwright Tests
+name: Playwright UI Tests
 
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
 
-permissions:
-  contents: read
-
 jobs:
   playwright-tests:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.19'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
 
-    - name: Build SigLens
-      run: make build
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.19'  # Updated to match your go.mod file
 
-    - name: Run SigLens
-      run: make run &
+      - name: Build SigLens
+        run: |
+          go mod tidy
+          make build
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'
+      - name: Run SigLens
+        run: |
+          ./siglens --config server.yaml &
+          sleep 10  # Give some time for SigLens to start
 
-    - name: Install Playwright and dependencies
-      run: |
-        cd playwright-test
-        npm ci
-        npx playwright install --with-deps
+      - name: Install Playwright Dependencies
+        run: |
+          cd playwright-test
+          npm init -y
+          npm install @playwright/test
+          npx playwright install --with-deps
 
-    - name: Run Playwright tests
-      run: |
-        cd playwright-test
-        npx playwright test
+      - name: Run Playwright tests
+        run: |
+          cd playwright-test
+          npx playwright test
