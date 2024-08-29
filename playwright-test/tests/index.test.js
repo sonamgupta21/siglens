@@ -5,15 +5,32 @@ test.describe('Logs Page Tests', () => {
     await page.goto('http://localhost:5122/index.html');
   });
 
-  test('verify logs page buttons', async ({ page }) => {
-    const indexButton = page.locator('.index-container');
+  test('verify date picker functionality', async ({ page }) => {
     const datePickerBtn = page.locator('#date-picker-btn');
-    // const searchButton = page.locator('#query-builder-btn');
 
-    // await expect(datePickerBtn).toHaveText('Last 15 Mins');
-    // await datePickerBtn.click();
-    // await expect(page.locator('#daterangepicker')).toBeVisible();
-    // await datePickerBtn.click();
+    await expect(datePickerBtn).toHaveText('Last 15 Mins');
+    await datePickerBtn.click();
+    await expect(page.locator('.daterangepicker')).toBeVisible();
+    await datePickerBtn.click();
+    await expect(page.locator('.daterangepicker')).not.toBeVisible();
+  });
+
+  test('verify search and show records functionality', async ({ page }) => {
+    const searchButton = page.locator('#query-builder-btn');
+
+    await searchButton.click();
+    await expect(page.locator('#empty-response')).toBeVisible();
+
+    const showRecordsBtn = page.locator('#show-record-intro-btn');
+    await expect(showRecordsBtn).toBeVisible();
+
+    await showRecordsBtn.click();
+    await expect(page.locator('div[aria-describedby="show-record-popup"]')).toBeVisible();
+
+    const cancelRecordsBtn = page.locator('.cancel-record-btn');
+
+    await cancelRecordsBtn.click();
+    await expect(page.locator('div[aria-describedby="show-record-popup"]')).not.toBeVisible();
   });
 
   test('should switch between Builder and Code tabs', async ({ page }) => {
