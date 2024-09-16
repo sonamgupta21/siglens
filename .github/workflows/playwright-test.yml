@@ -31,12 +31,11 @@ jobs:
           sleep 10 
 
       - name: Ingest Logs & Metrics
-        run:
-          command: |
-            cd tools/sigclient
-            go run main.go ingest esbulk -n 1 -g benchmark -d http://localhost:8081/elastic -t 10_000
-            go run main.go ingest metrics -d http://localhost:8081/otsdb -t 1_000 -m 5 -p 1 -b 10_000 -g benchmark
-            sleep 40
+        run: |
+          cd tools/sigclient
+          go run main.go ingest esbulk -n 1 -g benchmark -d http://localhost:8081/elastic -t 10_000
+          go run main.go ingest metrics -d http://localhost:8081/otsdb -t 1_000 -m 5 -p 1 -b 10_000 -g benchmark
+          sleep 40
 
       - name: Install Playwright Dependencies
         run: |
@@ -45,7 +44,7 @@ jobs:
           npm install @playwright/test
           npx playwright install --with-deps
 
-      - name: Run Playwright tests
+      - name: Run Playwright Tests
         run: |
           cd playwright-tests
           npx playwright test
