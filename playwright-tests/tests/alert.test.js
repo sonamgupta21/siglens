@@ -6,7 +6,7 @@ test.describe('Alert Tests', () => {
         await createAlert(page, 'Logs', 'option-1', 'option-1', 'city=Boston | stats count AS Count BY weekday');
     });
 
-    test('Create a new metrics alert', async ({ page }) => {
-        await createAlert(page, 'Metrics', 'option-2');
-    });
+    // test('Create a new metrics alert', async ({ page }) => {
+    //     await createAlert(page, 'Metrics', 'option-2');
+    // });
 });

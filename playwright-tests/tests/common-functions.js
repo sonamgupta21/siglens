@@ -65,7 +65,7 @@ async function createAlert(page, alertType, dataSourceOption, queryLanguageOptio
 
     // Set time range to "Last 30 minutes"
     await page.click('#date-picker-btn');
-    await page.click('#now-30m');
+    await page.click('#now-90d');
 
     // Set alert condition (Is above)
     await page.click('#alert-condition');
