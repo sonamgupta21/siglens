@@ -39,7 +39,8 @@ async function testDateTimePicker(page) {
 async function createAlert(page, alertType, dataSourceOption, queryLanguageOption = null, query = null) {
     try {
         console.log('Navigating to the alerts page...');
-        await page.goto('http://localhost:5122/alert.html');
+        await page.goto('http://localhost:5122/all-alerts.html');
+        await page.click('#new-alert-rule');
 
         console.log('Waiting for alert page to load...');
         await page.waitForSelector('#alert-rule-name', { state: 'visible' });
@@ -129,7 +130,6 @@ async function createAlert(page, alertType, dataSourceOption, queryLanguageOptio
         throw error; // Re-throw the error after logging it
     }
 }
-
 
 module.exports = {
     testDateTimePicker,

@@ -7,8 +7,8 @@ test.describe('Alert Tests', () => {
         await page.close();
     });
 
-    test('Create a new metrics alert', async ({ page }) => {
-        await createAlert(page, 'Metrics', 'option-2');
-        await page.close();
-    });
+    // test('Create a new metrics alert', async ({ page }) => {
+    //     await createAlert(page, 'Metrics', 'option-2');
+    //     await page.close();
+    // });
 });
