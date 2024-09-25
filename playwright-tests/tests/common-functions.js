@@ -50,6 +50,10 @@ async function createAlert(page, alertType, dataSourceOption, queryLanguageOptio
     await page.click('#alert-data-source');
     await page.click(`#data-source-options #${dataSourceOption}`);
 
+    // Set time range to "Last 30 minutes"
+    await page.click('#date-picker-btn');
+    await page.click('#now-90d');
+
     // If there's a specific query language to select (for Logs)
     if (queryLanguageOption) {
         await page.click('#logs-language-btn');
@@ -61,11 +65,14 @@ async function createAlert(page, alertType, dataSourceOption, queryLanguageOptio
         await page.click('#tab-title2'); // Switch to Code tab
         await page.fill('#filter-input', query);
         await page.click('#run-filter-btn'); // Run search
-    }
+    } else {
+        await page.click('#select-metric-input'); // Select metric
+        await page.waitForSelector('.metrics-ui-widget .ui-menu-item');
+        await page.click('.metrics-ui-widget .ui-menu-item:first-child');
 
-    // Set time range to "Last 30 minutes"
-    await page.click('#date-picker-btn');
-    await page.click('#now-90d');
+        const inputValue = await page.inputValue('#select-metric-input');
+        expect(inputValue).not.toBe('');
+    }
 
     // Set alert condition (Is above)
     await page.click('#alert-condition');
@@ -109,7 +116,7 @@ async function createAlert(page, alertType, dataSourceOption, queryLanguageOptio
     await page.click('#save-alert-btn');
 
     // Wait for navigation to the all-alerts page
-    await page.waitForNavigation({ url: /all-alerts\.html$/ });
+    await Promise.race([page.waitForNavigation({ url: /all-alerts\.html$/, timeout: 60000 })]);
 
     // Verify that we're on the all-alerts page
     expect(page.url()).toContain('all-alerts.html');
