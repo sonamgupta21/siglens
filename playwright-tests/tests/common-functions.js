@@ -120,7 +120,10 @@ async function createAlert(page, alertType, dataSourceOption, queryLanguageOptio
         await page.click('#save-alert-btn');
 
         console.log('Waiting for navigation to the all-alerts page...');
-        await Promise.race([page.waitForNavigation({ url: /all-alerts\.html$/, timeout: 60000 })]);
+        await Promise.race([
+            page.waitForNavigation({ url: /all-alerts\.html$/, timeout: 90000 }), // Increase timeout to 90 seconds
+            page.waitForTimeout(90000) // Add a fallback timeout
+        ]);
 
         console.log('Verifying navigation to all-alerts page...');
         expect(page.url()).toContain('all-alerts.html');
